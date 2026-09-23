@@ -50,7 +50,7 @@ propuesto):**
 
 ## 4. Pregunta predictiva
 
-> Dado un vuelo, **antes de que despegue**, ¿llegará a su destino con un
+> Dado un vuelo, **antes de que despegue**, ¿es posible determinar si llegará a su destino con un
 > retraso de **15 minutos o más** respecto a su horario programado de
 > llegada?
 
@@ -58,14 +58,14 @@ Es un problema de **clasificación binaria** (también podría plantearse como
 regresión sobre `arr_delay`, pero se elige la versión binaria porque es la
 definición estándar de "vuelo retrasado" usada por el Bureau of Transportation
 Statistics de EE. UU., y porque produce una tarea con desbalance de clases
-real y relevante para la rúbrica).
+real).
 
 ## 5. Variable objetivo
 
 `retraso_15` = 1 si `arr_delay >= 15` minutos, 0 en caso contrario.
 
-- **Distribución real:** 75.5% de los vuelos a tiempo (0) vs. 24.5%
-  retrasados (1) → desbalance moderado, suficiente para exigir métricas más
+- **Distribución real:** 75.5% de los vuelos a tiempo vs. 24.5%
+  retrasados → desbalance moderado, suficiente para exigir métricas más
   allá de accuracy.
 - Los **vuelos cancelados** (2.8% del total, `arr_delay` = NaN) se excluyen
   del target y se documentan como limitación (ver sección 12).
@@ -80,7 +80,7 @@ conoce su horario programado (antes del despegue real).
 
 Al momento de predicción (antes del despegue) están disponibles, entre otras:
 
-- **Temporales:** `month`, `day`, `hour` programada, `sched_dep_time`,
+- **Temporales:** `month`, `day`, `hour` (programada), `sched_dep_time`,
   `sched_arr_time`.
 - **Vuelo:** `carrier`, `origin`, `dest`, `distance`.
 - **Aeronave:** `plane_year`, `manufacturer`, `model`, `engines`, `seats`,
@@ -89,13 +89,13 @@ Al momento de predicción (antes del despegue) están disponibles, entre otras:
   `temp`, `dewp`, `humid`, `wind_speed`, `precip`, `pressure`, `visib`
   (unidas desde `weather`).
 
-**Limitación importante (declarada en la sección 12):** en este proyecto se
+**Limitación importante:** en este proyecto se
 usa el clima *observado* como proxy, aunque en producción real solo se
-tendría un *pronóstico* (con su propio error).
+tendría un *pronóstico* (con su propio error). Es decir, en este modelo se conoce el clima con mayor precisión de lo que se conoce en una situación real, que se basa en la predicción del clima. Por lo tanto, es un error que deberá ser añadido durante pruebas de campo del modelo.
 
 ## 8. Riesgos de leakage
 
-Se identificaron y **excluyeron explícitamente** las columnas que solo se
+Se identificaron y **excluyeron** las columnas que solo se
 conocen durante o después del vuelo:
 
 | Columna | Riesgo |
@@ -107,7 +107,7 @@ conocen durante o después del vuelo:
 | `arr_delay` | Es la variable con la que se construye el target |
 
 Un riesgo adicional de leakage temporal es de **partición**: como los datos
-tienen estructura temporal (estacionalidad, tormentas de días específicos),
+tienen estructura tempor+al (estacionalidad, tormentas de días específicos),
 un split aleatorio filtraría información del futuro al pasado. Por eso se
 usa un split temporal (ver sección 10) en lugar de un `train_test_split`
 aleatorio.
