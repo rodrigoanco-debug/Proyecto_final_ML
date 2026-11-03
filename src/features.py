@@ -1,7 +1,7 @@
-"""Preparación sencilla del notebook 02, sin ajustar transformadores ni modelos.
+"""Construcción de los conjuntos de características A y B usados en los notebooks 02-04.
 
 Solo se utilizan vuelos y clima de enero a noviembre de 2013. La publicación
-meteorológica se ESTIMA como hora de observación + dos horas.
+meteorológica se estima como hora de observación + 2 horas; no está verificada.
 """
 
 import numpy as np
@@ -39,7 +39,9 @@ def crear_programacion(tabla):
 
 
 def agregar_clima_historico(preparados, clima):
-    """Misma regla del 02: asof retrospectivo, hora + 2 h y edad <= 6 h."""
+    """Asigna a cada vuelo la última observación de su aeropuerto disponible
+    (hora + 2 h) en el instante de predicción, con antigüedad de 2 a 6 h.
+    Es la misma regla del notebook 02."""
     clima_limpio = clima[['origin', 'time_hour'] + CLIMA].copy()
     clima_limpio['viento_sospechoso'] = (clima_limpio['wind_speed'] < 0) | (clima_limpio['wind_speed'] > 200)
     clima_limpio.loc[clima_limpio['viento_sospechoso'], 'wind_speed'] = np.nan
@@ -69,7 +71,10 @@ def agregar_clima_historico(preparados, clima):
 
 
 def cargar_features():
-    """Reconstruye A/B sin leer salidas del 01, usar diciembre o ajustar nada."""
+    """Reconstruye A y B desde nycflights13 (enero-noviembre).
+
+    No lee resultados de otros notebooks, no usa diciembre y no ajusta
+    transformadores."""
     raw = load_raw()
     vuelos = raw['flights'].loc[lambda t: t['month'].between(1, 11)].copy()
     clima = raw['weather'].loc[lambda t: t['month'].between(1, 11)].copy()
